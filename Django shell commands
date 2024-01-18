@@ -1,0 +1,109 @@
+from news.models import*
+
+1.
+u1 = User.objects.create(username='Person1')
+u2 = User.objects.create(username='Person2')
+
+2.
+Author.objects.create(user=u1)
+Author.objects.create(user=u2)
+
+3.
+Category.objects.create(name='Economy')
+Category.objects.create(name='Politics')
+Category.objects.create(name='IT')
+Category.objects.create(name='Life')
+
+4.
+a1 = Author.objects.get(id=1)
+Post.objects.create(author=a1, post_genre='NW', post_title='Rocket Science', post_text="Rocket Science\
+ is fascinating! From propulsion to orbital mechanics, it's a thrilling blend of physics and engineering. \
+ Exploring the cosmos requires mastery of this field. Let's journey to the stars together!")
+
+a2 = Author.objects.get(id=2)
+Post.objects.create(author=a2, post_genre='AR', post_title='Cherry blossoms in Moscow', \
+post_text="Discover the beauty of cherry blossoms in Moscow!")
+
+Post.objects.create(author=a1, post_genre='AR', post_title='Delicious chocolates from Kenya', post_text="Discover \
+the delectable world of Kenyan sweet chocolates, made from locally sourced ingredients and crafted with love. \
+Indulge in the rich flavors and unique blends that make Kenyan chocolates a must-try for any chocolate lover.")
+
+5.
+Post.objects.get(id=2).category.add(Category.objects.get(id=4))
+Post.objects.get(id=2).category.add(Category.objects.get(id=2))
+Post.objects.get(id=1).category.add(Category.objects.get(id=3))
+Post.objects.get(id=3).category.add(Category.objects.get(id=4))
+
+6.
+Comment.objects.create(post_comment=Post.objects.get(id=1), user_comment=Author.objects.get(id=1).userAuthor, \
+comment_text='Very interesting news')
+
+Comment.objects.create(post_comment=Post.objects.get(id=2), user_comment=Author.objects.get(id=2).userAuthor, \
+comment_text="I don't think so")
+
+Comment.objects.create(post_comment=Post.objects.get(id=3), user_comment=Author.objects.get(id=2).userAuthor, \
+comment_text="Where can I buy some?")
+
+7.
+Comment.objects.get(id=1).like()
+Comment.objects.get(id=1).like()
+Comment.objects.get(id=1).dislike()
+Comment.objects.get(id=1).rating
+Comment.objects.get(id=2).like()
+Comment.objects.get(id=2).dislike()
+Comment.objects.get(id=2).dislike()
+Comment.objects.get(id=3).like()
+Comment.objects.get(id=3).like()
+Comment.objects.get(id=3).like()
+
+Post.objects.get(id=1).like()
+Post.objects.get(id=2).dislike()
+Post.objects.get(id=3).like()
+Post.objects.get(id=3).like()
+Post.objects.get(id=1).dislike()
+Post.objects.get(id=1).dislike()
+
+8.
+a1 = Author.objects.get(id=1)
+a1.update_rating()
+a1.user_rating
+
+a2 = Author.objects.get(id=2)
+a2.update_rating()
+a2.user_rating
+
+9.
+best_author = Author.objects.all().order_by('-authorRating').first()
+
+if best_author:
+    print(f"Автор:{best_author.userAuthor.username}")
+    print(f"Рейтинг автора:{best_author.authorRating}")
+else:
+    print("Автор не найден.")
+
+10.
+best_post = Post.objects.filter(post_rating__gt=0).order_by('-post_rating').first()
+
+if best_post:
+    print(f"Дата добавления: {best_post.post_time}")
+    print(f"Автор: {best_post.author.userAuthor.username}")
+    print(f"Рейтинг автора: {best_post.author.authorRating}")
+    print(f"Заголовок статьи: {best_post.post_title}")
+    print(f"Превью статьи: {best_post.preview()}")
+else:
+    print("Статья не найдена.")
+
+11.
+best_post = Post.objects.filter(post_rating__gt=0).order_by('-post_rating').first()
+
+if best_post:
+    print(f"Комментарии к статье '{best_post.post_title}':")
+    comments = Comment.objects.filter(post_comment=best_post)
+    for comment in comments:
+        print(f"Дата: {comment.comment_time}")
+        print(f"Пользователь: {comment.user_comment.username}")
+        print(f"Рейтинг: {comment.comment_rating}")
+        print(f"Текст: {comment.comment_text}")
+        print("------")
+else:
+    print("Статья не найдена")
